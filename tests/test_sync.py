@@ -24,7 +24,7 @@ def test_first_sync_fetches_links_and_writes_import(world, scratch_home, capsys)
     assert "fetched      alpha" in out
     for n in ("alpha", "beta"):
         assert os.path.islink(skills_dir() / n)
-        assert Path(os.readlink(skills_dir() / n)) == world.root / "vendor" / n
+        assert Path(links.read_link(skills_dir() / n)) == world.root / "vendor" / n
         assert (world.root / "vendor" / n / ".upstream").read_text().splitlines()[2] == f"ref={world.sha_py}"
     assert not (paths.codex_dir() / "alpha").exists()          # tool: claude only
     assert os.path.islink(scratch_home / ".codex" / "AGENTS.md")
@@ -78,7 +78,7 @@ def test_unmanaged_real_folder_and_foreign_link_are_left_alone(world, capsys):
     err = capsys.readouterr().err
     assert "exists and is not managed" in err and "points elsewhere and is not managed" in err
     assert (skills_dir() / "alpha").is_dir() and not os.path.islink(skills_dir() / "alpha")
-    assert os.readlink(skills_dir() / "beta") == str(world.tmp)
+    assert links.read_link(skills_dir() / "beta") == str(world.tmp)
     assert s.n_skip == 2
 
 
@@ -90,7 +90,7 @@ def test_managed_link_pointing_elsewhere_is_relinked(world):
     # recorded as ours, so it gets fixed
     s = world.sync()
     s.do_sync()
-    assert Path(os.readlink(skills_dir() / "alpha")) == world.root / "vendor" / "alpha"
+    assert Path(links.read_link(skills_dir() / "alpha")) == world.root / "vendor" / "alpha"
 
 
 def test_own_skills_are_linked_and_may_not_shadow_manifest_skills(world, capsys):

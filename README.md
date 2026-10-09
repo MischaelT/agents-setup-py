@@ -6,7 +6,7 @@ so a manifest from the bash version works here without changes.
 
 ## Install and run
 ```bash
-python -m pip install -e .          # needs Python 3.9+ and git; installs PyYAML
+python -m pip install -e .          # needs Python 3.13+ and git; installs PyYAML
 agents-setup --dry-run              # show what would change
 agents-setup                        # apply the manifest (same as: agents-setup sync)
 ```

@@ -30,7 +30,7 @@ def shell_command(cmd):
         return [bash, "-c", cmd]
     if os.name == "nt":
         return ["cmd", "/c", cmd]
-    return ["sh", "-c", cmd]
+    return [shutil.which("sh") or "/bin/sh", "-c", cmd]
 
 
 class Sync:

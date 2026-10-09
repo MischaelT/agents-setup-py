@@ -48,7 +48,7 @@ def should_fail(tool, command, key):
 
 
 def is_local(src):
-    return src.startswith(("/", ".", "~"))
+    return src.startswith((".", "~")) or os.path.isabs(src)
 
 
 def name_of(tool, src):

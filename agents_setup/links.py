@@ -17,12 +17,13 @@ def is_link(p):
 
 
 def read_link(p):
-    return os.readlink(p)
+    """Link target as text; Windows prepends a long-path marker we did not write."""
+    return os.readlink(p).removeprefix("\\\\?\\")
 
 
 def same_target(link, src):
     """A link points at src (compared as resolved text so '/a/b' and '/a/./b' agree)."""
-    cur = os.readlink(link)
+    cur = read_link(link)
     return cur == str(src) or os.path.normcase(os.path.abspath(cur)) == os.path.normcase(os.path.abspath(str(src)))
 
 

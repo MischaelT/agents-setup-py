@@ -2,7 +2,7 @@
 name = "agents-setup"
 version = "0.1.0"
 description = "Make this machine's AI-agent skills, plugins and instructions match a manifest.yaml (Linux, macOS, Windows)."
-requires-python = ">=3.9"
+requires-python = ">=3.13"
 dependencies = ["pyyaml>=5.1"]
 
 [project.optional-dependencies]
