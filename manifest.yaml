@@ -1,0 +1,66 @@
+# Single source of truth: everything that should be installed. Run `agents-setup` to apply.
+# Own skills under skills/{shared,claude,codex}/ are picked up automatically and need no entry here.
+# Edit by hand, or let `agents-setup add` / `agents-setup update` change the skills list (comments are kept).
+
+# Third-party skills, grouped by repo: one entry per repo, with one pinned commit shared by all of its skills.
+#   skills:  name -> folder of that skill inside the repo ("." = the repo root). A committed copy of each lives in vendor/<name>/.
+#   tool:    claude | codex | both, for every skill in the group.   ref: full 40-character commit hash, in quotes.
+# `agents-setup update` moves a whole group to the repo's latest commit as one unit. To pin two skills of one repo differently, use two groups.
+skills:
+  - repo: https://github.com/JuliusBrussee/caveman.git           # terse-reply mode, saves tokens (Apache-2.0)
+    ref: "99aafe151a1be72be783e662858e8a0955add59f"
+    tool: both
+    skills:
+      caveman: skills/caveman
+
+  - repo: https://github.com/wdm0006/python-skills.git          # example of a project-only skill
+    ref: "6a1863433c05546497af70b18256f1e0d9c09382"
+    tool: claude
+    global: false             # per project:  agents-setup project <folder> --only testing-python-libraries
+    project_ignore: [".pytest_cache/"]   # added to the project's .gitignore
+    skills:
+      testing-python-libraries: skills/python/testing-strategy
+
+# Global instruction files for the agents. Each tool has its own file.
+#   mode link:   target becomes a symlink to source (a copy that is refreshed when the source is newer, where symlinks are not allowed)
+#   mode import: target is a small generated file whose first line imports source (Claude Code reads
+#                CLAUDE.md, not AGENTS.md). Add Claude-only rules under that line; once you edit the
+#                file sync stops touching it.
+# sync never overwrites a real file that is already at the target.
+config:
+  - source: config/codex/AGENTS.md
+    mode: link
+    target: ~/.codex/AGENTS.md
+  - source: config/claude/CLAUDE.md
+    mode: import
+    target: ~/.claude/CLAUDE.md
+
+# Plugins are per tool: Claude plugins are installed with `claude plugin ...`, Codex plugins with `codex plugin ...`.
+# Their formats differ, so each tool has its own section. Skills (above) are the only thing the two tools share.
+#   marketplaces  claude: name, repo (owner/repo or a git URL)
+#                 codex:  name, source (owner/repo or a git URL), ref (branch or tag, passed as --ref), sparse (paths)
+#                 name is what plugins write after the @ (it comes from the marketplace's own catalog).
+#   vendored: true  saves a committed copy of the marketplace repo in vendor/marketplaces/<tool>/<name>/ at `ref` (a full commit
+#                 hash) and registers that folder instead of the remote.
+#   plugins       name@marketplace, or {id: name@marketplace, global: false} for a project-only plugin.
+#                 sync never touches plugins or marketplaces it did not install itself.
+claude_plugins:
+  marketplaces:
+    - name: superpowers-marketplace      # remote: all of its plugins come from other repos, so a copy would not contain them
+      repo: obra/superpowers-marketplace
+    - name: astral-sh                    # saved copy (Apache-2.0)
+      repo: astral-sh/claude-code-plugins
+      ref: "f3ce88a7ba830f53afd6d944c1d0278ed318e142"
+      vendored: true
+  plugins:
+    - superpowers@superpowers-marketplace
+    - astral@astral-sh                          # uv, ruff, ty
+
+codex_plugins:
+  marketplaces: []                       # e.g.  - name: epicsagas   /  source: epicsagas/plugins
+  plugins: []                            # e.g.  - alcove@epicsagas
+
+# Tools installed by a command. Runs once and is never re-run. Their data is NOT backed up by this repo.
+tools:
+  - name: ruff                       # demo of a tool: free, MIT, local, no account; remove again with `uv tool uninstall ruff`
+    run: uv tool install ruff==0.16.10   # pinned; needs uv

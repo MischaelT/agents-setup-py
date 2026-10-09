@@ -1,0 +1,22 @@
+[project]
+name = "agents-setup"
+version = "0.1.0"
+description = "Make this machine's AI-agent skills, plugins and instructions match a manifest.yaml (Linux, macOS, Windows)."
+requires-python = ">=3.9"
+dependencies = ["pyyaml>=5.1"]
+
+[project.optional-dependencies]
+test = ["pytest>=7"]
+
+[project.scripts]
+agents-setup = "agents_setup.cli:main"
+
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+packages = ["agents_setup"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

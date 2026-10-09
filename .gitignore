@@ -1,0 +1,13 @@
+# per-user state and junk
+state/*
+!state/README.md
+__pycache__/
+*.pyc
+*.egg-info/
+.pytest_cache/
+*.tmp
+*.old.*
+.stage.*
+.env
+*.key
+*.pem
